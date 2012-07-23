@@ -1,0 +1,11 @@
+Bundle-ManifestVersion: 2
+Bundle-Name: %Bundle-Name
+Bundle-SymbolicName: org.eclipselabs.nullness.ui;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Require-Bundle: org.eclipse.core.runtime;bundle-version="3.8.0",
+ org.eclipse.ui;bundle-version="3.8.0",
+ org.eclipselabs.nullness;bundle-version="0.7.0",
+ org.eclipse.jdt.ui;bundle-version="3.8.0",
+ org.eclipse.core.resources;bundle-version="3.8.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: org.eclipselabs.nullness.ui;version="0.7.0";x-internal:=true

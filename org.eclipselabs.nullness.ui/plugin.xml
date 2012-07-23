@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<!--
+  Copyright (c) 2012 Sebastian Zarnekow (http://zarnekow.blogspot.de) and others.
+  All rights reserved. This program and the accompanying materials
+  are made available under the terms of the Eclipse Public License v1.0
+  which accompanies this distribution, and is available at
+  http://www.eclipse.org/legal/epl-v10.html
+  
+  Authors:
+    Dennis Huebner - Initial implementation
+-->
+<plugin>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.eclipse.jdt.ui.preferences.CompliancePreferencePage"
+            class="org.eclipselabs.nullness.ui.NullnessPreferencePage"
+            id="org.eclipselabs.nullness.ui.PreferencePage"
+            name="%page.name">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            category="org.eclipse.jdt.ui.propertyPages.CompliancePreferencePage"
+            class="org.eclipselabs.nullness.ui.NullnessPreferencePage"
+            id="org.eclipselabs.nullness.ui.PropertyPage"
+            name="%page.name">
+      </page>
+   </extension>
+
+</plugin>

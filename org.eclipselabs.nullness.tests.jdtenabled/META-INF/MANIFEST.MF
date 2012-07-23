@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %Bundle-Name
+Bundle-SymbolicName: org.eclipselabs.nullness.tests.jdtenabled
+Bundle-Version: 0.7.0.qualifier
+Require-Bundle: org.eclipse.jdt.annotation;bundle-version="1.0.0",
+ org.junit;bundle-version="4.10.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: org.eclipselabs.nullness.tests.jdtenabled.enums;version="0.7.0";x-internal:=true,
+ org.eclipselabs.nullness.tests.jdtenabled;version="0.7.0";x-internal:=true,
+ org.eclipselabs.nullness.tests.jdtenabled.classes;version="0.7.0";x-internal:=true
