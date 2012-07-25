@@ -12,9 +12,12 @@ The compiler that inserts the runtime assertions does not depend on JDTs static 
 
 As soon as you implement a non-null method but return null by accident, an exception is thrown at runtime that tells you that something went wrong:
 
+```
  Non-null method MyType#myMethod must not return null
- 
+```
+
 The same applies for parameters that are specified as non-null. If you pass a null value, an exception is raised with a meaningful message:
 
+```
  Argument for non-null parameter aParam at index 1 of MyType#myMethod must not be null
-
+```
