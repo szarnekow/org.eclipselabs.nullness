@@ -32,4 +32,9 @@ public class ClassWithDefaultNonNullConstraints extends TestHarness {
 		return null;
 	}
 
+	@Override
+	public String methodWithDeclaredNonNullReturnValue(String param) {
+		return null;
+	}
+
 }

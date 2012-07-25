@@ -8,22 +8,15 @@
  * Authors:
  *   Sebastian Zarnekow - Initial implementation
  *******************************************************************************/
-package org.eclipselabs.nullness.tests.jdtenabled.pack;
+package org.eclipselabs.nullness.tests.jdtdisabled.classes;
 
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipselabs.nullness.tests.jdtenabled.classes.TestHarness;
+public class SubClass extends ClassWithNonNullConstraints {
 
-public class ClassWithDefaultNonNullConstraints extends TestHarness {
-
-	public ClassWithDefaultNonNullConstraints() {
+	public SubClass() {
 	}
 
-	public ClassWithDefaultNonNullConstraints(String first, @Nullable String second) {
-	}
-
-	@Override
-	public String methodWithArguments(String first, @Nullable String second) {
-		return "ok";
+	public SubClass(String subFirst, String subSecond) {
+		super(subFirst, subSecond);
 	}
 
 	@Override
@@ -35,4 +28,5 @@ public class ClassWithDefaultNonNullConstraints extends TestHarness {
 	public String methodWithDeclaredNonNullReturnValue(String param) {
 		return null;
 	}
+
 }

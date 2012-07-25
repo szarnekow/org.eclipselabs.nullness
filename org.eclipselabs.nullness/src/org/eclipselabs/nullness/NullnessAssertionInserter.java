@@ -22,8 +22,10 @@ import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
+import org.eclipse.jdt.internal.compiler.lookup.AnnotationBinding;
 import org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
+import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.SyntheticMethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeConstants;
@@ -42,13 +44,13 @@ class NullnessAssertionInserter extends ClassAdapter {
 	private boolean checkInserted = false;
 
 	private final ITypeBinding typeBinding;
-	private final TypeBinding internalBinding;
+	private final TypeBinding internalTypeBinding;
 	private final Boolean defaultNonNullState;
 
 	NullnessAssertionInserter(ClassVisitor classVisitor, ITypeBinding typeBinding) {
 		super(classVisitor);
 		this.typeBinding = typeBinding;
-		this.internalBinding = getInternalBinding(typeBinding);
+		this.internalTypeBinding = getInternalBinding(typeBinding);
 		this.defaultNonNullState = getDefaultNonNullState();
 	}
 
@@ -86,7 +88,79 @@ class NullnessAssertionInserter extends ClassAdapter {
 				return Boolean.FALSE;
 			}
 		}
+		if (Boolean.TRUE.equals(defaultNonNullState) || binding.isConstructor()) {
+			return defaultNonNullState;
+		}
+		MethodBinding internalMethodBinding = getInternalBinding(binding);
+		Boolean result = recursiveGetInheritedNonNullState(internalMethodBinding);
+		if (result != null) {
+			return result;
+		}
+		// TODO apply default stuff recursively, too
 		return defaultNonNullState;
+	}
+
+	private Boolean recursiveGetInheritedNonNullState(MethodBinding internalMethodBinding) {
+		ReferenceBinding superclass = internalMethodBinding.declaringClass.superclass();
+		Boolean result = recursiveGetInheritedNonNullState(internalMethodBinding, superclass);
+		if (Boolean.TRUE.equals(result)) {
+			return result;
+		}
+		for (ReferenceBinding intf : internalMethodBinding.declaringClass.superInterfaces()) {
+			Boolean candidate = recursiveGetInheritedNonNullState(internalMethodBinding, intf);
+			if (Boolean.TRUE.equals(candidate))
+				return candidate;
+			if (candidate != null) {
+				result = candidate;
+			}
+		}
+		return result;
+	}
+
+	private Boolean recursiveGetInheritedNonNullState(MethodBinding internalMethodBinding, ReferenceBinding declarator) {
+		if (declarator == null)
+			return null;
+		MethodBinding[] methods = declarator.getMethods(internalMethodBinding.selector);
+		for (MethodBinding method : methods) {
+			if (internalMethodBinding.areParameterErasuresEqual(method)) {
+				return getEffectiveNonNullState(method);
+			}
+		}
+		Boolean result = recursiveGetInheritedNonNullState(internalMethodBinding, declarator.superclass());
+		if (result != null)
+			return result;
+		for (ReferenceBinding intf : declarator.superInterfaces()) {
+			Boolean candidate = recursiveGetInheritedNonNullState(internalMethodBinding, intf);
+			if (Boolean.TRUE.equals(candidate))
+				return candidate;
+			if (candidate != null) {
+				result = candidate;
+			}
+		}
+		return result;
+	}
+
+	private Boolean getEffectiveNonNullState(MethodBinding method) {
+		AnnotationBinding[] annotations = method.getAnnotations();
+		for (AnnotationBinding annotation : annotations) {
+			if ("org.eclipse.jdt.annotation.NonNull".equals(getAnnotationTypeName(annotation))) {
+				// TODO check the value of 'value'
+				return Boolean.TRUE;
+			}
+			if ("org.eclipse.jdt.annotation.NonNullByDefault".equals(getAnnotationTypeName(annotation))) {
+				return Boolean.TRUE;
+			}
+			if ("org.eclipse.jdt.annotation.Nullable".equals(getAnnotationTypeName(annotation))) {
+				return Boolean.FALSE;
+			}
+		}
+		return recursiveGetInheritedNonNullState(method);
+	}
+
+	private String getAnnotationTypeName(AnnotationBinding annotation) {
+		ReferenceBinding annotationType = annotation.getAnnotationType();
+		String result = CharOperation.toString(annotationType.compoundName);
+		return result;
 	}
 
 	private Boolean getEffectiveNonNullState(IMethodBinding binding, IAnnotationBinding[] parameterAnnotations) {
@@ -196,7 +270,6 @@ class NullnessAssertionInserter extends ClassAdapter {
 			return methodVisitor;
 		}
 		final Type[] args = Type.getArgumentTypes(desc);
-		Type returnType = Type.getReturnType(desc);
 
 		// null == undefined, false == nullable, true == non-null
 		final Boolean[] nonNullParameters = new Boolean[methodBinding.getParameterTypes().length];

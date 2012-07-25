@@ -13,7 +13,6 @@ package org.eclipselabs.nullness.tests.jdtenabled.classes;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipselabs.nullness.tests.jdtenabled.classes.TestHarness;
 
 public class ClassWithSpacesInLocation extends TestHarness {
 
@@ -32,6 +31,11 @@ public class ClassWithSpacesInLocation extends TestHarness {
 	@NonNull
 	@Override
 	public String methodWithReturnValue() {
+		return null;
+	}
+
+	@Override
+	public String methodWithDeclaredNonNullReturnValue(String param) {
 		return null;
 	}
 

@@ -37,6 +37,10 @@ public class Outer {
 				return null;
 			}
 
+			@Override
+			public String methodWithDeclaredNonNullReturnValue(String param) {
+				return null;
+			}
 		}
 
 		public class InnerWithNonNullConstraints extends TestHarness {
@@ -55,6 +59,11 @@ public class Outer {
 			@Override
 			@NonNull
 			public String methodWithReturnValue() {
+				return null;
+			}
+
+			@Override
+			public String methodWithDeclaredNonNullReturnValue(String param) {
 				return null;
 			}
 

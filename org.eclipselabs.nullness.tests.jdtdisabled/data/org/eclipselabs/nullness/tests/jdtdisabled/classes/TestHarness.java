@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipselabs.nullness.tests.jdtdisabled.classes;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
 public abstract class TestHarness {
@@ -17,5 +18,8 @@ public abstract class TestHarness {
 	public abstract String methodWithArguments(String first, @Nullable String second);
 
 	public abstract String methodWithReturnValue();
+
+	@NonNull
+	public abstract String methodWithDeclaredNonNullReturnValue(String param);
 
 }

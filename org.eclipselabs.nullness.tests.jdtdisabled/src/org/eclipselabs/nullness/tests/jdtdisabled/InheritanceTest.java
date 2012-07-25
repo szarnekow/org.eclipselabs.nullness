@@ -8,32 +8,33 @@
  * Authors:
  *   Sebastian Zarnekow - Initial implementation
  *******************************************************************************/
-package org.eclipselabs.nullness.tests.jdtdisabled.pack;
+package org.eclipselabs.nullness.tests.jdtdisabled;
 
-import org.eclipse.jdt.annotation.Nullable;
+import org.eclipselabs.nullness.tests.jdtdisabled.classes.ClassWithNonNullConstraints;
+import org.eclipselabs.nullness.tests.jdtdisabled.classes.SubClass;
 import org.eclipselabs.nullness.tests.jdtdisabled.classes.TestHarness;
 
-public class ClassWithDefaultNonNullConstraints extends TestHarness {
+public class InheritanceTest extends AbstractNonNullOnClassTest {
 
-	public ClassWithDefaultNonNullConstraints() {
-	}
-
-	public ClassWithDefaultNonNullConstraints(String first, @Nullable String second) {
+	@SuppressWarnings("null")
+	@Override
+	protected TestHarness createTestHarness(String s1, String s2) {
+		return new SubClass(s1, s2);
 	}
 
 	@Override
-	public String methodWithArguments(String first, @Nullable String second) {
-		return "ok";
+	protected String getTestHarnessName() {
+		return ClassWithNonNullConstraints.class.getSimpleName();
 	}
 
 	@Override
-	public String methodWithReturnValue() {
-		return null;
+	protected String getTestHarnessNameForReturnValue() {
+		return super.getTestHarnessName();
 	}
 
 	@Override
-	public String methodWithDeclaredNonNullReturnValue(String param) {
-		return null;
+	protected TestHarness createTestHarness() {
+		return new SubClass();
 	}
 
 }

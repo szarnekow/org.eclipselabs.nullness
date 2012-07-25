@@ -35,6 +35,10 @@ class WithNonNullConstraints extends TestHarness {
 		return null;
 	}
 
+	@Override
+	public String methodWithDeclaredNonNullReturnValue(String param) {
+		return null;
+	}
 }
 
 @SuppressWarnings("null")
@@ -57,4 +61,8 @@ class WithDefaultNonNullConstraints extends TestHarness {
 		return null;
 	}
 
+	@Override
+	public String methodWithDeclaredNonNullReturnValue(String param) {
+		return null;
+	}
 }

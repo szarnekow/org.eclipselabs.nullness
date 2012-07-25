@@ -57,4 +57,30 @@ public abstract class AbstractNonNullOnClassTest {
 		Assert.assertEquals("ok", testMe.methodWithArguments("", null));
 	}
 
+	protected String getTestHarnessNameForReturnValue() {
+		return getTestHarnessName();
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void testReturnValue_01() {
+		TestHarness testMe = createTestHarness();
+		try {
+			testMe.methodWithReturnValue();
+		} catch (IllegalStateException e) {
+			ExceptionMessageAsserter.assertMessage(e, getTestHarnessNameForReturnValue(), "methodWithReturnValue");
+			throw e;
+		}
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void testReturnValue_02() {
+		TestHarness testMe = createTestHarness();
+		try {
+			testMe.methodWithDeclaredNonNullReturnValue("");
+		} catch (IllegalStateException e) {
+			ExceptionMessageAsserter.assertMessage(e, getTestHarnessNameForReturnValue(), "methodWithDeclaredNonNullReturnValue");
+			throw e;
+		}
+	}
+
 }
