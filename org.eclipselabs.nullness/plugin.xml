@@ -11,6 +11,7 @@
     Sebastian Zarnekow - Initial implementation
 -->
 <plugin>
+   <extension-point id="annotations" name="%ep.annotations.name" schema="schema/annotations.exsd"/>
    <extension
          point="org.eclipse.jdt.core.compilationParticipant">
       <compilationParticipant
@@ -24,4 +25,38 @@
             class="org.eclipselabs.nullness.PreferencesAccessor">
       </initializer>
    </extension>
+ <extension
+       point="org.eclipselabs.nullness.annotations">
+    <annotationSet>
+       <nonNull
+             typeName="org.eclipse.jdt.annotation.NonNull">
+       </nonNull>
+       <nullable
+             typeName="org.eclipse.jdt.annotation.Nullable">
+       </nullable>
+       <defaultNonNull
+             typeName="org.eclipse.jdt.annotation.NonNullByDefault">
+       </defaultNonNull>
+    </annotationSet>
+    <annotationSet>
+       <nonNull
+             typeName="javax.annotations.Nonnull">
+       </nonNull>
+       <nullable
+             typeName="javax.annotations.Nullable">
+       </nullable>
+       <nullable
+             typeName="javax.annotations.CheckForNull">
+       </nullable>
+       <nullable
+             typeName="javax.annotations.CheckReturnValue">
+       </nullable>
+       <defaultNonNull
+             typeName="javax.annotations.ParametersAreNonnullByDefault">
+       </defaultNonNull>
+       <defaultNullable
+             typeName="javax.annotations.ParametersAreNullableByDefault">
+       </defaultNullable>
+    </annotationSet>
+ </extension>
 </plugin>

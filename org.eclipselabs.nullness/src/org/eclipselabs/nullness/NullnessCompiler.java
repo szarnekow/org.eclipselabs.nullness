@@ -35,6 +35,10 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipselabs.nullness.equinox.JavaProjectAnnotationSet;
+import org.eclipselabs.nullness.equinox.MergedAnnotationSet;
+import org.eclipselabs.nullness.equinox.NullnessAnnotationSet;
+import org.eclipselabs.nullness.equinox.RegistryAnnotationSet;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
@@ -45,6 +49,20 @@ public class NullnessCompiler extends CompilationParticipant {
 	private static final Logger log = Logger.getLogger(NullnessCompiler.class);
 
 	private List<BuildContext> files;
+
+	private final NullnessAnnotationSet[] defaultAnnotationSets;
+
+	private NullnessAnnotationSet projectAnnotationSet;
+
+	public NullnessCompiler() {
+		this.defaultAnnotationSets = RegistryAnnotationSet.getAnnotationSets();
+	}
+
+	@Override
+	public int aboutToBuild(IJavaProject project) {
+		projectAnnotationSet = new JavaProjectAnnotationSet(project);
+		return super.aboutToBuild(project);
+	}
 
 	@Override
 	public void buildStarting(BuildContext[] files, boolean isBatch) {
@@ -69,9 +87,10 @@ public class NullnessCompiler extends CompilationParticipant {
 		try {
 			super.buildFinished(project);
 			if (files != null) {
+				NullAnnotationFinder finder = new NullAnnotationFinder(new MergedAnnotationSet(projectAnnotationSet, defaultAnnotationSets));
 				for (BuildContext file : files) {
 					try {
-						addRuntimeChecks(file.getFile());
+						addRuntimeChecks(file.getFile(), finder);
 					} catch (JavaModelException e) {
 						NullnessCompiler.log.error(e.getMessage(), e);
 					}
@@ -79,10 +98,11 @@ public class NullnessCompiler extends CompilationParticipant {
 			}
 		} finally {
 			files = null;
+			projectAnnotationSet = null;
 		}
 	}
 
-	private void addRuntimeChecks(IFile javaFile) throws JavaModelException {
+	private void addRuntimeChecks(IFile javaFile, NullAnnotationFinder finder) throws JavaModelException {
 		IRegion region = JavaCore.newRegion();
 		ICompilationUnit cu = (ICompilationUnit) JavaCore.create(javaFile);
 		region.add(cu);
@@ -106,7 +126,7 @@ public class NullnessCompiler extends CompilationParticipant {
 								String binaryName = file.getFullPath().removeFileExtension().lastSegment();
 								ITypeBinding typeBinding = findTypeBinding(binaryName, bindings);
 								if (typeBinding != null) {
-									final NullnessAssertionInserter nullChecker = new NullnessAssertionInserter(writer, typeBinding);
+									final NullnessAssertionInserter nullChecker = new NullnessAssertionInserter(writer, typeBinding, finder);
 									reader.accept(nullChecker, 0);
 									if (nullChecker.isCheckInserted()) {
 										ByteArrayInputStream newContent = new ByteArrayInputStream(writer.toByteArray());

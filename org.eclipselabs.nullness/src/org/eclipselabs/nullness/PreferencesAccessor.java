@@ -36,7 +36,7 @@ public class PreferencesAccessor extends AbstractPreferenceInitializer {
 	}
 
 	/**
-	 * If Project preference is avaiable
+	 * If Project preference is available
 	 * 
 	 * @param preferenceName
 	 * @param project
