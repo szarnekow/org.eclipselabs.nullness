@@ -97,7 +97,11 @@ class NullAnnotationFinder {
 				if (castedBinding.isMember()) {
 					result = recursiveGetDefaultNonNullState(castedBinding.getDeclaringClass());
 				} else if (castedBinding.isLocal()) {
-					result = recursiveGetDefaultNonNullState(castedBinding.getDeclaringMethod());
+					IMethodBinding declaringMethod = castedBinding.getDeclaringMethod();
+					if (declaringMethod != null)
+						result = recursiveGetDefaultNonNullState(declaringMethod);
+					else
+						result = recursiveGetDefaultNonNullState(castedBinding.getDeclaringClass());
 				} else {
 					result = recursiveGetDefaultNonNullState(castedBinding.getPackage());
 				}

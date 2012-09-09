@@ -15,7 +15,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipselabs.nullness.tests.jdtdisabled.classes.TestHarness;
 
-@SuppressWarnings("null")
 class WithNonNullConstraints extends TestHarness {
 
 	public WithNonNullConstraints() {
@@ -42,7 +41,6 @@ class WithNonNullConstraints extends TestHarness {
 
 }
 
-@SuppressWarnings("null")
 @NonNullByDefault
 class WithDefaultNonNullConstraints extends TestHarness {
 

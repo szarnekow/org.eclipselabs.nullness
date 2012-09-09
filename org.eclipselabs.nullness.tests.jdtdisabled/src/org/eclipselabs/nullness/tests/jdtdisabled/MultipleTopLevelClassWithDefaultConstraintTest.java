@@ -14,7 +14,6 @@ import org.eclipselabs.nullness.tests.jdtdisabled.classes.TestHarness;
 
 public class MultipleTopLevelClassWithDefaultConstraintTest extends AbstractNonNullOnClassTest {
 
-	@SuppressWarnings("null")
 	@Override
 	protected TestHarness createTestHarness(String s1, String s2) {
 		return new WithDefaultNonNullConstraints(s1, s2);

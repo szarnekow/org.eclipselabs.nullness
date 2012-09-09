@@ -11,23 +11,46 @@
 package org.eclipselabs.nullness.tests.jdtdisabled;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipselabs.nullness.tests.jdtdisabled.classes.ClassWithNonNullConstraints;
 import org.eclipselabs.nullness.tests.jdtdisabled.classes.TestHarness;
 import org.junit.Test;
 
-public class AnonymousClassNonNullTest extends AbstractNonNullOnClassTest {
+public class AnonymousClassInClassNonNullTest extends AbstractNonNullOnClassTest {
 
-	@Override
-	protected TestHarness createTestHarness(String s1, String s2) {
-		return new ClassWithNonNullConstraints(s1, s2) {
+	static class TestHarnessDelegate {
+		String s1;
+		String s2;
+
+		TestHarnessDelegate(String s1, String s2) {
+			this.s1 = s1;
+			this.s2 = s2;
+		}
+	}
+
+	static class TestHarnessDelegateSub extends TestHarnessDelegate {
+		TestHarness testHarness = new ClassWithNonNullConstraints(s1, s2) {
+			// anonymous class defined in method
 		};
+
+		TestHarnessDelegateSub(String s1, String s2) {
+			super(s1, s2);
+		}
 	}
 
 	@Override
+	protected TestHarness createTestHarness(String s1, String s2) {
+		return new TestHarnessDelegateSub(s1, s2).testHarness;
+	}
+
+	private final TestHarness testHarness = new ClassWithNonNullConstraints() {
+		// anonymous class defined in method
+	};
+
+	@Override
 	protected TestHarness createTestHarness() {
-		return new ClassWithNonNullConstraints() {
-		};
+		return testHarness;
 	}
 
 	@Override
@@ -35,20 +58,22 @@ public class AnonymousClassNonNullTest extends AbstractNonNullOnClassTest {
 		return ClassWithNonNullConstraints.class.getSimpleName();
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void testParameter_03() {
-		TestHarness testMe = new ClassWithNonNullConstraints() {
-			@Override
-			public String methodWithArguments(@Nullable String first, @Nullable String second) {
-				return methodWithArgumentsImpl(first, second);
-			}
+	private final TestHarness testHarnessForParameter_03 = new ClassWithNonNullConstraints() {
+		@Override
+		public String methodWithArguments(@Nullable String first, @Nullable String second) {
+			return methodWithArgumentsImpl(first, second);
+		}
 
-			private String methodWithArgumentsImpl(@Nullable String first, @NonNull String second) {
-				return "ok";
-			}
-		};
+		private String methodWithArgumentsImpl(@Nullable String first, @NonNull String second) {
+			return "ok";
+		}
+	};
+
+	@Test(expected = IllegalArgumentException.class)
+	@NonNullByDefault
+	public void testParameter_03() {
 		try {
-			testMe.methodWithArguments(null, null);
+			testHarnessForParameter_03.methodWithArguments(null, null);
 		} catch (IllegalArgumentException e) {
 			ExceptionMessageAsserter.assertMessage(e, "second", 1, "anonymous " + getTestHarnessName(), "methodWithArgumentsImpl");
 			throw e;

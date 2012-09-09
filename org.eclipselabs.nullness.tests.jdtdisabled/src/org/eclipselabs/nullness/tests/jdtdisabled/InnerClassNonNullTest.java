@@ -11,12 +11,11 @@
 package org.eclipselabs.nullness.tests.jdtdisabled;
 
 import org.eclipselabs.nullness.tests.jdtdisabled.classes.Outer;
-import org.eclipselabs.nullness.tests.jdtdisabled.classes.TestHarness;
 import org.eclipselabs.nullness.tests.jdtdisabled.classes.Outer.Mid;
+import org.eclipselabs.nullness.tests.jdtdisabled.classes.TestHarness;
 
 public class InnerClassNonNullTest extends AbstractNonNullOnClassTest {
 
-	@SuppressWarnings("null")
 	@Override
 	protected TestHarness createTestHarness(String s1, String s2) {
 		Mid mid = new Outer().new Mid();

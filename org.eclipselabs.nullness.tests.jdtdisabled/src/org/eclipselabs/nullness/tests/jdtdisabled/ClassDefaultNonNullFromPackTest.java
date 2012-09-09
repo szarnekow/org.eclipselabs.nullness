@@ -15,7 +15,6 @@ import org.eclipselabs.nullness.tests.jdtdisabled.pack.ClassWithDefaultNonNullCo
 
 public class ClassDefaultNonNullFromPackTest extends AbstractNonNullOnClassTest {
 
-	@SuppressWarnings("null")
 	@Override
 	protected TestHarness createTestHarness(String s1, String s2) {
 		return new ClassWithDefaultNonNullConstraints(s1, s2);
