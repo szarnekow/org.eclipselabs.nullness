@@ -88,9 +88,10 @@ public class NullnessCompiler extends CompilationParticipant {
 			super.buildFinished(project);
 			if (files != null) {
 				NullAnnotationFinder finder = new NullAnnotationFinder(new MergedAnnotationSet(projectAnnotationSet, defaultAnnotationSets));
+				FieldCache fieldCache = new FieldCache(project, finder);
 				for (BuildContext file : files) {
 					try {
-						addRuntimeChecks(file.getFile(), finder);
+						addRuntimeChecks(file.getFile(), finder, fieldCache);
 					} catch (JavaModelException e) {
 						NullnessCompiler.log.error(e.getMessage(), e);
 					}
@@ -102,7 +103,7 @@ public class NullnessCompiler extends CompilationParticipant {
 		}
 	}
 
-	private void addRuntimeChecks(IFile javaFile, NullAnnotationFinder finder) throws JavaModelException {
+	private void addRuntimeChecks(IFile javaFile, NullAnnotationFinder finder, FieldCache fieldCache) throws JavaModelException {
 		IRegion region = JavaCore.newRegion();
 		ICompilationUnit cu = (ICompilationUnit) JavaCore.create(javaFile);
 		region.add(cu);
@@ -126,7 +127,8 @@ public class NullnessCompiler extends CompilationParticipant {
 								String binaryName = file.getFullPath().removeFileExtension().lastSegment();
 								ITypeBinding typeBinding = findTypeBinding(binaryName, bindings);
 								if (typeBinding != null) {
-									final NullnessAssertionInserter nullChecker = new NullnessAssertionInserter(writer, typeBinding, finder);
+									final NullnessAssertionInserter nullChecker = new NullnessAssertionInserter(writer, typeBinding,
+											finder, fieldCache);
 									reader.accept(nullChecker, 0);
 									if (nullChecker.isCheckInserted()) {
 										ByteArrayInputStream newContent = new ByteArrayInputStream(writer.toByteArray());

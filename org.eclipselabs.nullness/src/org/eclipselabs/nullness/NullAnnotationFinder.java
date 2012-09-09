@@ -169,6 +169,17 @@ class NullAnnotationFinder {
 		return result;
 	}
 
+	Boolean getEffectiveNonNullState(IVariableBinding binding, Boolean defaultNonNullState) {
+		IAnnotationBinding[] annotations = binding.getAnnotations();
+		for (IAnnotationBinding annotation : annotations) {
+			String typeName = getAnnotationTypeName(annotation);
+			Boolean result = getEffectiveNonNullState(typeName);
+			if (result != null)
+				return result;
+		}
+		return defaultNonNullState;
+	}
+
 	Boolean getEffectiveNonNullState(IMethodBinding binding, Boolean defaultNonNullState) {
 		IAnnotationBinding[] annotations = binding.getAnnotations();
 		for (IAnnotationBinding annotation : annotations) {
