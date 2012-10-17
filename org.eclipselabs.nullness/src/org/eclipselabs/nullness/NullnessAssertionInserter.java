@@ -12,9 +12,6 @@ package org.eclipselabs.nullness;
 
 import static org.objectweb.asm.Opcodes.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.compiler.CharOperation;
@@ -139,9 +136,7 @@ class NullnessAssertionInserter extends ClassAdapter {
 		final boolean hasNonNullParameter = hasNonNullParameter(nonNullParameters);
 		final String[] parameterNames = hasNonNullParameter ? getParameterNames(methodBinding) : null;
 		return new MethodAdapter(methodVisitor) {
-			private Label throwReturnLabel;
 			private Label startGeneratedCodeLabel;
-			private Map<String, Label> fieldAccessLabels;
 
 			@Override
 			public void visitCode() {
@@ -151,6 +146,8 @@ class NullnessAssertionInserter extends ClassAdapter {
 					for (int param = 0; param < nonNullParameters.length; param++) {
 						if (Boolean.TRUE.equals(nonNullParameters[param])) {
 							int var = ((access & ACC_STATIC) == 0) ? 1 : 0;
+							// adjust for things like enums constructors and
+							// non-static inner class constructors
 							int offset = args.length - nonNullParameters.length;
 							for (int i = 0; i < param + offset; ++i) {
 								var += args[i].getSize();
@@ -193,20 +190,50 @@ class NullnessAssertionInserter extends ClassAdapter {
 				if (opcode == ARETURN) {
 					if (Boolean.TRUE.equals(returnTypeNonNull[0])) {
 						mv.visitInsn(DUP);
-						if (throwReturnLabel == null) {
-							Label skipLabel = new Label();
-							mv.visitJumpInsn(IFNONNULL, skipLabel);
-							throwReturnLabel = new Label();
-							mv.visitLabel(throwReturnLabel);
-							throwStatement(ILLEGAL_STATE_EXCEPTION,
-									String.format("Non-null method %s#%s must not return null", getTypeName(), name), skipLabel);
-						} else {
-							mv.visitJumpInsn(IFNULL, throwReturnLabel);
-						}
+						Label skipLabel = new Label();
+						mv.visitJumpInsn(IFNONNULL, skipLabel);
+						throwStatement(ILLEGAL_STATE_EXCEPTION,
+								String.format("Non-null method %s#%s must not return null", getTypeName(), name), skipLabel);
 					}
 				}
 
 				mv.visitInsn(opcode);
+			}
+
+			@Override
+			public void visitVarInsn(final int opcode, final int var) {
+				if (opcode == ASTORE) {
+					if (hasNonNullParameter) {
+						int parameterIdx = toParameterIndex(var);
+						if (parameterIdx >= 0 && Boolean.TRUE.equals(nonNullParameters[parameterIdx])) {
+							mv.visitInsn(DUP);
+							Label end = new Label();
+							mv.visitJumpInsn(IFNONNULL, end);
+							// not quite sure about the concrete exception type
+							// but ISE should do for now.
+							throwStatement(ILLEGAL_STATE_EXCEPTION, String.format(
+									"Value for non-null parameter %s at index %d of %s#%s must not be reassigned to null",
+									parameterNames[parameterIdx], parameterIdx, getTypeName(), name), end);
+						}
+					}
+				}
+				super.visitVarInsn(opcode, var);
+			}
+
+			protected int toParameterIndex(int var) {
+				boolean isStatic = ((access & ACC_STATIC) != 0);
+				if (!isStatic && var == 0) {
+					return -1;
+				}
+				int parameterIdx = 0;
+				for (int i = 0; i < args.length; ++i) {
+					parameterIdx += args[i].getSize();
+					if (parameterIdx == var) {
+						parameterIdx = i - (args.length - nonNullParameters.length);
+						return parameterIdx;
+					}
+				}
+				return -1;
 			}
 
 			@Override
@@ -215,22 +242,12 @@ class NullnessAssertionInserter extends ClassAdapter {
 					Boolean nullState = fieldCache.getEffectiveNonNullState(owner, name);
 					if (Boolean.TRUE.equals(nullState)) {
 						mv.visitInsn(DUP);
-						if (fieldAccessLabels == null) {
-							fieldAccessLabels = new HashMap<String, Label>(3);
-						}
-						String selector = name + "/" + owner;
-						Label label = fieldAccessLabels.get(selector);
-						if (label == null) {
-							Label skipLabel = new Label();
-							mv.visitJumpInsn(IFNONNULL, skipLabel);
-							label = new Label();
-							mv.visitLabel(label);
-							throwStatement(ILLEGAL_STATE_EXCEPTION,
-									String.format("Non-null field %s#%s must not be set to null", owner, name), skipLabel);
-							fieldAccessLabels.put(selector, label);
-						} else {
-							mv.visitJumpInsn(IFNULL, label);
-						}
+						Label skipLabel = new Label();
+						mv.visitJumpInsn(IFNONNULL, skipLabel);
+						Label label = new Label();
+						mv.visitLabel(label);
+						throwStatement(ILLEGAL_STATE_EXCEPTION, String.format("Non-null field %s#%s must not be set to null", owner, name),
+								skipLabel);
 					}
 				}
 				mv.visitFieldInsn(opcode, owner, name, desc);
