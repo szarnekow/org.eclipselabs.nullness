@@ -1,1 +1,3 @@
+resolve "${projects.location}/org.eclipselabs.nullness.buckminster/test-project.cquery"
+build
 junit -l "org.eclipselabs.nullness.tests.jdtenabled/org.eclipselabs.nullness.tests.jdtenabled.launch"  --flatXML --output "${buckminster.output.root}/test.results/org.eclipselabs.nullness.tests.jdtenabled.launch.xml"

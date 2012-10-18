@@ -17,11 +17,10 @@
 	<property name="build.root" location="${WORKSPACE}/buildroot" />
 	<property name="buckminster.home" location="/Users/dhuebner/buckminster" />
 	<property name="projects.location" location="${WORKSPACE}" />
-	<property name="commands.file" location="${projects.location}/org.eclipselabs.nullness.buckminster/commands.txt" />
+	<property name="commands.file" location="${projects.location}/org.eclipselabs.nullness.buckminster/test-commands.txt" />
 	<property name="target.platform" value="target.platform" />
 	
 	<target name="buckminster" depends="cleanup" description="description">
-		<echo message="IMPORTANT: Populating an empty target platform may took over 10 minutes."/>
 		<condition property="executable.file" value="buckminster.bat" else="buckminster">
 			<os family="windows"/>
 		</condition>
@@ -34,8 +33,7 @@
 			<arg line="-configuration '${build.root}/configuration'" />
 			<arg line="-S '${commands.file}'" />
 		</exec>
-		<echo message=" "/>
-		<echo message="Updatesite output in: ${build.root}/buckminster.output/org.eclipselabs.nullness.site_*-eclipse.feature/site.p2/"/>
+		<echo message="Done..."/>
 	</target>
 
 	<target name="cleanup">
