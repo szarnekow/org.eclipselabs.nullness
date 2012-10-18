@@ -17,7 +17,7 @@
 	<property name="build.root" location="${WORKSPACE}/buildroot" />
 	<property name="buckminster.home" location="/Users/dhuebner/buckminster" />
 	<property name="projects.location" location="${WORKSPACE}" />
-	<property name="commands.file" location="${projects.location}/org.eclipselabs.nullness.buckminster/commands.txt" />
+	<property name="commands.file" location="${projects.location}/org.eclipselabs.nullness.buckminster/test-commands.txt" />
 	<property name="target.platform" value="target.platform" />
 	
 	<target name="buckminster" description="description">
