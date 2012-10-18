@@ -3,5 +3,6 @@
     <cs:dependencies>
         <cs:dependency name="org.eclipse.platform" componentType="eclipse.feature"/>
         <cs:dependency name="org.objectweb.asm" componentType="osgi.bundle"/>
+        <cs:dependency name="org.eclipse.jdt.annotation" componentType="osgi.bundle"/>
 </cs:dependencies>
 </cs:cspec>
