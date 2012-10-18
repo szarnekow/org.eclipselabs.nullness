@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature id="org.eclipselabs.nullness.site"
+	label="org.eclipselabs.nullness.site Feature"
+	version="1.0.0.qualifier">
+	<includes
+		id="org.eclipselabs.nullness.feature"
+		version="0.0.0"/>
+</feature>

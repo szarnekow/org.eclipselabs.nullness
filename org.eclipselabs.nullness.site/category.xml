@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+	<feature id="org.eclipselabs.nullness.feature" version="0.0.0">
+		<category name="main"/>
+	</feature>
+	<feature id="org.eclipselabs.nullness.source.feature" version="0.0.0">
+		<category name="main.source"/>
+	</feature>
+   <category-def name="main" label="Nullness"/>
+   <category-def name="main.source" label="Source for Nullness"/>
+</site>

@@ -1,0 +1,6 @@
+setpref targetPlatformPath="${target.platform}"
+resolve "${projects.location}/org.eclipselabs.nullness.buckminster/projects-platform.cquery"
+resolve "${projects.location}/org.eclipselabs.nullness.buckminster/project.cquery"
+build
+junit -l "org.eclipselabs.nullness.tests.jdtenabled/org.eclipselabs.nullness.tests.jdtenabled.launch"  --flatXML --output "${buckminster.output.root}/test.results/org.eclipselabs.nullness.tests.jdtenabled.launch.xml"
+perform "org.eclipselabs.nullness.site#site.p2"
