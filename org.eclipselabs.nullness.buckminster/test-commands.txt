@@ -1,2 +1,3 @@
+build
 junit -l "org.eclipselabs.nullness.tests.jdtenabled/org.eclipselabs.nullness.tests.jdtenabled.launch"  --flatXML --output "${buckminster.output.root}/test.results/org.eclipselabs.nullness.tests.jdtenabled.launch.xml"
 junit -l "org.eclipselabs.nullness.tests.jdtdisabled/org.eclipselabs.nullness.tests.jdtdisabled.launch"  --flatXML --output "${buckminster.output.root}/test.results/org.eclipselabs.nullness.tests.jdtdisabled.launch.xml"
