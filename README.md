@@ -23,6 +23,6 @@ The same applies for parameters that are specified as non-null. If you pass a nu
  Argument for non-null parameter aParam at index 1 of MyType#myMethod must not be null
 ```
 
-Binaries
---------
-[![Build Status](https://dhuebner.ci.cloudbees.com/job/Nullness-nightly/badge/icon)](https://dhuebner.ci.cloudbees.com/job/Nullness-nightly/)
+Build on cloudbees
+------------------
+Find the artifacts here: [![Build Status](https://dhuebner.ci.cloudbees.com/job/Nullness-nightly/badge/icon)](https://dhuebner.ci.cloudbees.com/job/Nullness-nightly/)
